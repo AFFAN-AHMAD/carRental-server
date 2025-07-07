@@ -7,12 +7,14 @@ const checkAvailability = async (car, pickupDate, returnDate) => {
   const bookings = await Booking.find({
     car,
     pickupDate: {
-      $lte: returnDate,
+      $lte: pickupDate,
     },
     returnDate: {
       $gte: pickupDate,
     },
+    status: { $ne: "cancelled" },
   });
+  console.log("bookings", bookings);
   return bookings.length == 0;
 };
 
@@ -34,6 +36,7 @@ export const checkAvailabilityOfCar = async (req, res) => {
         pickupDate,
         returnDate
       );
+      console.log("isAvailable", isAvailable);
       return { ...car._doc, isAvailable };
     });
     let availableCars = await Promise.all(availableCarsPromises);
